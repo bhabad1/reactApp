@@ -1,12 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Link, BrowserRouter as Router, Route } from "react-router-dom";
+import {  Provider } from 'react-redux'
 import {
-  Provider
-} from 'react-redux'
-import {
-  createStore
+  createStore,
+  applyMiddleware,
+  compose
 } from 'redux';
+import createSagaMiddleware from 'redux-saga'
+
 
 import "./index.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -14,15 +16,23 @@ import "bootstrap-css-only/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
 
 import App from "./App.jsx";
-import rootReducer from '../src/reducer/rootReducer'
+import rootReducer from '../src/reducer/rootReducer';
+import rootSaga from '../src/sagas/rootSaga';
 import { Home, About, Contact, Other } from "./App";
 
-
+const sagaMiddleware = createSagaMiddleware();
+let middleware = applyMiddleware(sagaMiddleware);
+  middleware = compose(
+    middleware,
+     window.__REDUX_DEVTOOLS_EXTENSION__ &&
+       window.__REDUX_DEVTOOLS_EXTENSION__()
+  )
 const store = createStore(
   rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ &&
-  window.__REDUX_DEVTOOLS_EXTENSION__()
+   middleware
 )
+
+sagaMiddleware.run(rootSaga);
 
 ReactDOM.render(
    <Provider store = { store } >
